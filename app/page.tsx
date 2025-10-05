@@ -91,7 +91,6 @@ export default function Home() {
 
   return (
     <>
-      <div className="bg-red-500 text-white p-4">Hello Tailwind!</div>
       <div className="min-h-dvh bg-linear-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800">
         <main className="mx-auto max-w-2xl md:max-w-3xl px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           <h1 className="text-3xl md:text-4xl font-bold text-center mb-6 md:mb-8">
