@@ -34,7 +34,7 @@ This endpoint mirrors the architecture of the generation route but uses a separa
 - **Front-End Implementation (page.tsx)**
 I significantly enhanced the user interface and user experience by improving the responsive layout, integrating loading spinners for asynchronous actions, and adding smart UI logic—such as disabling the input field and “Generate New Problem” button during operations. Additionally, I designed clear box containers to display both AI-generated problems and feedback messages, creating a more intuitive interaction flow.
 
-## Additional Features (Optional)
+## Additional Features
 In addition to the base implementation, I integrated and refined several advanced features to improve user experience and maintainability:
 
 - **Gemini Model Abstraction**
