@@ -26,8 +26,8 @@ Create ONE real-world math word problem that a Primary 5 student can solve witho
 
 Return ONLY JSON (no backticks/markdown, no extra text) with EXACT fields:
 {
-  "problem_text": string,     // 1–3 sentences
-  "correct_answer": number    // final numeric answer only (no units)
+  "problem_text": string,
+  "correct_answer": number
 }
 
 Constraints:

@@ -18,6 +18,9 @@ type SubmitResponse = {
 export default function Home() {
   const [problem, setProblem] = useState<GenerateResponse | null>(null);
   const [userAnswer, setUserAnswer] = useState("");
+  const [hint, setHint] = useState<string>("");
+  const [isHintLoading, setIsHintLoading] = useState(false);
+
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +42,7 @@ export default function Home() {
       setIsLoading(true);
       setError("");
       setFeedback("");
+      setHint("");
       setIsCorrect(null);
       setUserAnswer("");
       setAnswerLocked(false);
@@ -58,6 +62,25 @@ export default function Home() {
       );
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function fetchHint() {
+    if (!sessionId || isHintLoading) return;
+    try {
+      setIsHintLoading(true);
+      const res = await fetch("/api/math-problems/hint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      });
+      const data: { hint?: string; error?: string } = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to fetch hint");
+      setHint(data.hint || "");
+    } catch (e: any) {
+      setHint("Sorry, I couldn't fetch a hint right now.");
+    } finally {
+      setIsHintLoading(false);
     }
   }
 
@@ -172,10 +195,79 @@ export default function Home() {
                       </span>
                     )}
                   </div>
+                  <div className="mb-5 sm:mb-6">
+                    <button
+                      type="button"
+                      onClick={fetchHint}
+                      disabled={
+                        isLoading || isSubmitting || isHintLoading || !sessionId
+                      }
+                      className="inline-flex items-center gap-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-700"
+                      aria-expanded={!!hint}
+                      aria-controls="hint-panel"
+                    >
+                      <svg
+                        className={`h-4 w-4 ${hint ? "" : ""}`}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M9 18h6M10 21h4"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M12 3a7 7 0 00-4.95 11.95c.38.38.78.92 1.04 1.55l.32.76h7.18l.32-.76c.26-.63.66-1.17 1.04-1.55A7 7 0 0012 3z"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                        />
+                      </svg>
+                      {isHintLoading
+                        ? "Getting hint…"
+                        : hint
+                        ? "Show hint again"
+                        : "Show hint"}
+                    </button>
 
-                  <h2 className="text-lg font-semibold mb-2 sm:mb-3">
-                    Problem
-                  </h2>
+                    <div id="hint-panel" className="mt-3">
+                      {isHintLoading && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                          <svg
+                            className="h-4 w-4 animate-spin"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                              className="opacity-25"
+                            />
+                            <path
+                              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                              fill="currentColor"
+                              className="opacity-75"
+                            />
+                          </svg>
+                          <span>Generating a helpful hint…</span>
+                        </div>
+                      )}
+                      {!isHintLoading && hint && (
+                        <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-100">
+                          <strong className="mr-1">Hint:</strong>
+                          <span>{hint}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <h2>Problem</h2>
                   <p className="mb-5 sm:mb-6 leading-relaxed">
                     {problem?.problem_text}
                   </p>
